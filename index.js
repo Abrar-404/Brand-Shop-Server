@@ -26,18 +26,42 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-        const brandCollection = client.db('brandDB').collection('brand');
-        const userCollection = client.db('coffee2DB').collection('user');
+    const brandCollection = client.db('brandDB').collection('brand');
+    const NewBrandCollection = client.db('brandDB').collection('newBrand');
+    const allProductCollection = client.db('brandDB').collection('allProducts');
+    const userCollection = client.db('coffee2DB').collection('user');
 
+    app.get('/brands', async (req, res) => {
+      const cursor = brandCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
+    app.get('/newBrand', async (req, res) => {
+      const cursor = NewBrandCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
-app.post('/brands', async (req, res) => {
-  const allBrands = req.body;
-  console.log(allBrands);
-  const result = await brandCollection.insertOne(allBrands);
-  res.send(result);
-});
+    app.get('/allProducts', async (req, res) => {
+      const cursor = allProductCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
+    app.post('/allProducts', async (req, res) => {
+      const allProducts = req.body;
+      console.log(allProducts);
+      const result = await allProductCollection.insertOne(allProducts);
+      res.send(result);
+    });
+
+    app.post('/brands', async (req, res) => {
+      const allBrands = req.body;
+      console.log(allBrands);
+      const result = await brandCollection.insertOne(allBrands);
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 });
