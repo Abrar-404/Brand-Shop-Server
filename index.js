@@ -25,6 +25,20 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+        const brandCollection = client.db('brandDB').collection('brand');
+        const userCollection = client.db('coffee2DB').collection('user');
+
+
+
+app.post('/brands', async (req, res) => {
+  const allBrands = req.body;
+  console.log(allBrands);
+  const result = await brandCollection.insertOne(allBrands);
+  res.send(result);
+});
+
+
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 });
     console.log(
@@ -32,9 +46,15 @@ async function run() {
     );
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
 
+app.get('/', (req, res) => {
+  res.send('Brand Shop server is running perfectly');
+});
 
+app.listen(port, () => {
+  console.log(`Server is running on PORT: ${port}`);
+});
