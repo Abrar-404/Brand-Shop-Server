@@ -30,26 +30,36 @@ async function run() {
     const brandUserCollection = client.db('brandDB').collection('userBrands');
     const NewBrandCollection = client.db('brandDB').collection('newBrand');
     const allProductCollection = client.db('brandDB').collection('allProducts');
-    const userCollection = client.db('coffee2DB').collection('user');
+    const userCollection = client.db('brandDB').collection('user');
 
+    // Old json data infos
     app.get('/brands', async (req, res) => {
       const cursor = brandCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
+    // Main 6 types data json
     app.get('/newBrand', async (req, res) => {
       const cursor = NewBrandCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
+    // Data of add product form and added products page cards
     app.get('/userBrands', async (req, res) => {
       const cursor = brandUserCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
+    app.get('/user', async (req, res) => {
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    //
     app.get('/userBrands/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -57,12 +67,14 @@ async function run() {
       res.send(result);
     });
 
+    // Different products under brand name related data
     app.get('/allProducts', async (req, res) => {
       const cursor = allProductCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
+    // Different products under brand name related data
     app.post('/allProducts', async (req, res) => {
       const allProducts = req.body;
       console.log(allProducts);
@@ -70,6 +82,7 @@ async function run() {
       res.send(result);
     });
 
+    // Old json data infos
     app.post('/brands', async (req, res) => {
       const allBrands = req.body;
       console.log(allBrands);
@@ -77,6 +90,7 @@ async function run() {
       res.send(result);
     });
 
+    // Data of add product form and added products page cards
     app.post('/userBrands', async (req, res) => {
       const brandUsers = req.body;
       console.log(brandUsers);
@@ -103,6 +117,19 @@ async function run() {
       res.send(result);
     });
 
+    // adding new user
+    app.post('/user', async (req, res) => {
+      const newUser = req.body;
+      const query = { email: newUser.email };
+      const existingUser = await userCollection.findOne(query);
+      if (existingUser) {
+        return;
+      }
+      const result = await userCollection.insertOne(newUser);
+      res.send(result);
+    });
+
+    // Added products deletation related data
     app.delete('/userBrands/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
