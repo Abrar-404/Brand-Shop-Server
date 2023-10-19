@@ -27,6 +27,7 @@ async function run() {
     await client.connect();
 
     const brandCollection = client.db('brandDB').collection('brand');
+    const brandUserCollection = client.db('brandDB').collection('userBrands');
     const NewBrandCollection = client.db('brandDB').collection('newBrand');
     const allProductCollection = client.db('brandDB').collection('allProducts');
     const userCollection = client.db('coffee2DB').collection('user');
@@ -39,6 +40,12 @@ async function run() {
 
     app.get('/newBrand', async (req, res) => {
       const cursor = NewBrandCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get('/userBrands', async (req, res) => {
+      const cursor = brandUserCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -60,6 +67,13 @@ async function run() {
       const allBrands = req.body;
       console.log(allBrands);
       const result = await brandCollection.insertOne(allBrands);
+      res.send(result);
+    });
+
+    app.post('/userBrands', async (req, res) => {
+      const brandUsers = req.body;
+      console.log(brandUsers);
+      const result = await brandUserCollection.insertOne(brandUsers);
       res.send(result);
     });
 
