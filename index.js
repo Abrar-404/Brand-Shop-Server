@@ -30,6 +30,7 @@ async function run() {
     const brandUserCollection = client.db('brandDB').collection('userBrands');
     const NewBrandCollection = client.db('brandDB').collection('newBrand');
     const allProductCollection = client.db('brandDB').collection('allProducts');
+    const cartCollection = client.db('brandDB').collection('cart');
     const userCollection = client.db('brandDB').collection('user');
 
     // Old json data infos
@@ -47,14 +48,31 @@ async function run() {
     });
 
     // Data of add product form and added products page cards
+    // app.get('/userBrands', async (req, res) => {
+    //   const email = req.query.email;
+    //   const query = { email: email };
+    //   const result = await brandUserCollection.find(query);
+    //   res.send(result);
+    // });
+
     app.get('/userBrands', async (req, res) => {
-      const cursor = brandUserCollection.find();
-      const result = await cursor.toArray();
+      let query = {};
+      if (req.query?.email) {
+        query = { email: req.query.email };
+      }
+      const result = await brandUserCollection.find(query).toArray();
+
       res.send(result);
     });
 
     app.get('/user', async (req, res) => {
       const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get('/cart', async (req, res) => {
+      const cursor = cartCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -88,6 +106,24 @@ async function run() {
       console.log(allBrands);
       const result = await brandCollection.insertOne(allBrands);
       res.send(result);
+    });
+
+    // Cart data
+    app.post('/cart', async (req, res) => {
+      const product = req.body;
+      const query = { id: product.id };
+      const existingProduct = await cartCollection.findOne(query);
+
+      if (existingProduct) {
+        // Product already exists, set 400 status and send a JSON response
+        return res
+          .status(400)
+          .json({ message: 'Product already exists in the cart' });
+      } else {
+        // Product doesn't exist, add it to the cart and set 200 status
+        const result = await cartCollection.insertOne(product);
+        res.status(200).json({ message: 'Product added to cart' });
+      }
     });
 
     // Data of add product form and added products page cards
@@ -135,6 +171,33 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const result = await brandUserCollection.deleteOne(query);
       res.send(result);
+    });
+
+    // cart deletation related data
+    // app.delete('/cart/:id', async (req, res) => {
+    //   const id = req.params.id;
+    //   const query = { _id: new ObjectId(id) };
+    //   const result = await cartCollection.deleteOne(query);
+    //   res.send(result);
+    // });
+
+    app.delete('/cart/:id', async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await cartCollection.deleteOne(query);
+
+        if (result.deletedCount === 1) {
+          // Item deleted successfully
+          res.status(204).send(); // 204 No Content
+        } else {
+          // Item not found or not deleted
+          res.status(404).json({ message: 'Item not found or not deleted' });
+        }
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+      }
     });
 
     // Send a ping to confirm a successful connection
