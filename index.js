@@ -85,6 +85,38 @@ async function run() {
       res.send(result);
     });
 
+    // Update get and patch
+    app.get('/updateItem/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await brandUserCollection.findOne(query);
+      res.send(result);
+    });
+
+    // Update get and patch
+    app.patch('/updateItem/:id', async (req, res) => {
+      const id = req.params.id;
+      const data = req.body;
+      const updateDoc = {
+        $set: {
+          name: data.name,
+          price: data.price,
+          type: data.type,
+          email: data.email,
+          brandName: data.brandName,
+          description: data.description,
+          image: data.image,
+        },
+      };
+      const result = await brandUserCollection.updateOne(
+        {
+          _id: new ObjectId(id),
+        },
+        updateDoc
+      );
+      res.send(result);
+    });
+
     // Different products under brand name related data
     app.get('/allProducts', async (req, res) => {
       const cursor = allProductCollection.find();
