@@ -15,6 +15,7 @@ app.use(
       'http://localhost:5000',
       'http://localhost:5173',
       'https://brand-shop-server-alpha.vercel.app',
+      'https://brand-shop-c499b.web.app',
     ],
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -28,7 +29,8 @@ app.use((req, res, next) => {
     'Access-Control-Allow-Origin',
     'https://brand-shop-server-alpha.vercel.app',
     'http://localhost:5000',
-    'http://localhost:5173'
+    'http://localhost:5173',
+    'https://brand-shop-c499b.web.app'
   );
   res.header('Access-Control-Allow-Credentials', true);
   res.header(
